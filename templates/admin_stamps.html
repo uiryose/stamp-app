@@ -1,0 +1,117 @@
+{% extends 'layout.html' %}
+{% block title %}スタンプ承認{% endblock %}
+{% block content %}
+  <h1 class="h4 mb-3">スタンプ承認</h1>
+
+  <form class="row g-2 mb-3" method="get" action="{{ url_for('admin_stamps') }}">
+    <div class="col-md-4">
+      <label class="form-label">ユーザー</label>
+      <select class="form-select" name="user_id">
+        <option value="">すべて</option>
+        {% for u in users %}
+          <option value="{{ u.id }}" {% if request.args.get('user_id') and request.args.get('user_id')|int == u.id %}selected{% endif %}>{{ u.employee_code }} ({{ u.id }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">イベント</label>
+      <select class="form-select" name="event_id">
+        <option value="">すべて</option>
+        {% for e in events %}
+          <option value="{{ e.id }}" {% if request.args.get('event_id') and request.args.get('event_id')|int == e.id %}selected{% endif %}>{{ e.title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+      <button class="btn btn-outline-primary" type="submit">絞り込み</button>
+    </div>
+  </form>
+
+  <form method="post" action="{{ url_for('admin_stamps_approve') }}" onsubmit="return confirm('選択した申請を承認します。よろしいですか？');">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>未承認の参加申請</span>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-success" type="submit">一括承認</button>
+          <button form="rejectForm" class="btn btn-sm btn-danger" type="submit">却下</button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead>
+            <tr>
+              <th style="width:40px;"><input type="checkbox" onclick="document.querySelectorAll('.chk').forEach(c=>c.checked=this.checked)"></th>
+              <th>ユーザー</th>
+              <th>イベント</th>
+              <th>申請日時</th>
+              <th>付与予定ポイント</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ue in pendings %}
+              <tr>
+                <td><input type="checkbox" class="chk" name="ue_ids" value="{{ ue.id }}"></td>
+                <td>{{ ue.user.employee_code }} (ID:{{ ue.user_id }})</td>
+                <td>{{ ue.event.title }}</td>
+                <td>{{ ue.joined_at|ymd }}</td>
+                <td>{{ ue.event.points or 1 }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" class="text-muted">未承認の申請はありません</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+
+  <form id="rejectForm" method="post" action="{{ url_for('admin_stamps_reject') }}" onsubmit="return confirm('選択した申請を却下します。よろしいですか？');">
+    <input type="hidden" name="ue_ids">
+  </form>
+  <script>
+    // 承認テーブルの選択チェックボックス値を却下フォームにコピー
+    (function(){
+      const rejectForm = document.getElementById('rejectForm');
+      const hidden = rejectForm.querySelector('input[name="ue_ids"]');
+      document.addEventListener('submit', function(e){
+        if(e.submitter && e.submitter.form === rejectForm){
+          const ids = Array.from(document.querySelectorAll('.chk:checked')).map(c=>c.value);
+          hidden.value = ids.join(',');
+          if(ids.length === 0){
+            e.preventDefault();
+            alert('却下する申請を選択してください');
+          }
+        }
+      });
+    })();
+  </script>
+
+  <div class="card mt-4">
+    <div class="card-header">特別付与</div>
+    <div class="card-body">
+      <form class="row g-2" method="post" action="{{ url_for('admin_stamps_grant') }}" onsubmit="return confirm('特別付与を反映します。よろしいですか？');">
+        <div class="col-md-3">
+          <label class="form-label">ユーザー</label>
+          <select class="form-select" name="user_id" required>
+            {% for u in users %}
+              <option value="{{ u.id }}">{{ u.employee_code }} (ID:{{ u.id }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">付与スタンプ</label>
+          <input class="form-control" type="number" name="amount" min="1" value="1" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">理由</label>
+          <input class="form-control" name="reason" placeholder="例: 社内健康キャンペーン表彰">
+        </div>
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit">特別付与</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+

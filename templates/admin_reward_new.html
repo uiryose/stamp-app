@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% block title %}新規景品作成{% endblock %}
+{% block content %}
+  <h1 class="h4 mb-3">新規景品作成</h1>
+  <div class="card">
+    <div class="card-body">
+      <form class="row g-2" method="post" action="{{ url_for('admin_create_reward') }}" onsubmit="return confirm('この内容で景品を作成します。よろしいですか？');">
+        <div class="col-md-8">
+          <label class="form-label">景品名</label>
+          <input class="form-control" name="name" placeholder="例: カフェドリンク無料券" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">必要スタンプ</label>
+          <input class="form-control" name="required_stamps" type="number" min="1" required>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit">作成</button>
+          <a class="btn btn-outline-secondary ms-2" href="{{ url_for('admin') }}">戻る</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+

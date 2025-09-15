@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+{% block title %}イベント詳細{% endblock %}
+{% block content %}
+
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h1 class="h4 m-0">{{ event.title }}</h1>
+          <div class="mt-2">
+            状態:
+            {% if event.is_active %}<span class="badge bg-primary">受付中</span>{% else %}<span class="badge bg-secondary">終了</span>{% endif %}
+            <span class="badge bg-info text-dark ms-2">ポイント: ★ {{ event.points or 1 }}</span>
+            <span class="badge bg-secondary ms-2">募集人数: {{ current_count }}/{{ event.capacity or '—' }}</span>
+          </div>
+        </div>
+        <div>
+          {% if role == 'admin' %}
+            <form method="post" action="{{ url_for('toggle_event', event_id=event.id) }}">
+              {% if event.is_active %}
+                <button class="btn btn-warning" type="submit">イベントを終了する</button>
+              {% else %}
+                <button class="btn btn-success" type="submit">イベントを再開する</button>
+              {% endif %}
+            </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">基本情報</div>
+            <div class="card-body">
+              <div>開催日: <strong>{{ event.date or '-' }}</strong></div>
+              <div>開催時間: <strong>{{ event.start_time or '-' }} 〜 {{ event.end_time or '-' }}</strong></div>
+              <div>開催場所: <strong>{{ event.location or '-' }}</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">詳細情報</div>
+            <div class="card-body">
+              <div class="mb-2">説明: <div class="mt-1">{{ event.description or '' }}</div></div>
+              <div>担当者: <strong>{{ event.contact_name or '-' }}</strong></div>
+              <div class="mt-2">備考: <div class="mt-1">{{ event.notes or '' }}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="h5">参加者一覧</h2>
+      <ul class="list-group">
+        {% for u in participants %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>社員コード: {{ u.employee_code }}</span>
+            <span class="badge bg-secondary">ID: {{ u.id }}</span>
+          </li>
+        {% else %}
+          <li class="list-group-item text-muted">参加者はいません</li>
+        {% endfor %}
+      </ul>
+{% endblock %}
+
+

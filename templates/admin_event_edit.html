@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% block title %}イベント編集{% endblock %}
+{% block content %}
+  <h1 class="h4 mb-3">イベント編集</h1>
+  <div class="card">
+    <div class="card-body">
+      <form class="row g-2" method="post" action="{{ url_for('admin_update_event', event_id=event.id) }}" onsubmit="return confirm('この内容で保存します。よろしいですか？');">
+        <div class="col-12">
+          <label class="form-label">イベント名</label>
+          <input class="form-control" name="title" value="{{ event.title }}" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">開催日</label>
+          <input class="form-control" name="date" value="{{ event.date or '' }}" placeholder="YYYY-MM-DD">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">開始時刻</label>
+          <input class="form-control" name="start_time" value="{{ event.start_time or '' }}" placeholder="HH:MM">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">終了時刻</label>
+          <input class="form-control" name="end_time" value="{{ event.end_time or '' }}" placeholder="HH:MM">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">開催場所</label>
+          <input class="form-control" name="location" value="{{ event.location or '' }}" placeholder="会議室A / オンラインURL">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">定員</label>
+          <input class="form-control" name="capacity" type="number" min="0" value="{{ event.capacity or '' }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">ポイント</label>
+          <input class="form-control" name="points" type="number" min="0" value="{{ event.points or 1 }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">担当者</label>
+          <input class="form-control" name="contact_name" value="{{ event.contact_name or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">種別</label>
+          <select class="form-select" name="event_type">
+            <option value="single" {% if event.event_type == 'single' %}selected{% endif %}>単発</option>
+            <option value="annual" {% if event.event_type == 'annual' %}selected{% endif %}>年間</option>
+            <option value="practice" {% if event.event_type == 'practice' %}selected{% endif %}>練習</option>
+            <option value="survey" {% if event.event_type == 'survey' %}selected{% endif %}>アンケート/応募</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label">説明</label>
+          <textarea class="form-control" name="description" rows="3">{{ event.description or '' }}</textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label">備考</label>
+          <textarea class="form-control" name="notes" rows="3">{{ event.notes or '' }}</textarea>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit">保存</button>
+          <a class="btn btn-outline-secondary ms-2" href="{{ url_for('admin') }}">戻る</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+

@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% block title %}マイページ{% endblock %}
+{% block content %}
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5">ようこそ、{{ user.employee_code }} さん</h2>
+          <p class="mb-1">役割: <span class="badge bg-{{ 'primary' if user.role == 'admin' else 'secondary' }}">{{ user.role }}</span></p>
+          <p class="mb-0">現在のスタンプ数: <strong>{{ user.stamps }}</strong></p>
+        </div>
+      </div>
+
+      
+        <h3 class="h6 mb-2 mt-4">現在参加中のイベント</h3>
+        <ul class="list-group mb-4">
+          {% for e in joined_active %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-truncate" style="max-width: 70%;">{{ e.title }} / 開催日: {{ e.date or '-' }}</span>
+              <a href="{{ url_for('event_detail', event_id=e.id) }}" class="btn btn-sm btn-outline-primary">詳細</a>
+            </li>
+          {% else %}
+            <li class="list-group-item text-muted">現在参加中のイベントはありません</li>
+          {% endfor %}
+        </ul>
+
+        <h3 class="h6 mb-2">終了したイベント（参加済）</h3>
+        <ul class="list-group mb-4">
+          {% for e in joined_finished %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-truncate" style="max-width: 70%;">{{ e.title }} / 開催日: {{ e.date or '-' }}</span>
+              <a href="{{ url_for('event_detail', event_id=e.id) }}" class="btn btn-sm btn-outline-primary">詳細</a>
+            </li>
+          {% else %}
+            <li class="list-group-item text-muted">終了済み参加イベントはありません</li>
+          {% endfor %}
+        </ul>
+
+        <h3 class="h6 mb-2">終了したイベント（未参加）</h3>
+        <ul class="list-group mb-4">
+          {% for e in finished_not_joined %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-truncate" style="max-width: 70%;">{{ e.title }} / 開催日: {{ e.date or '-' }}</span>
+              <a href="{{ url_for('event_detail', event_id=e.id) }}" class="btn btn-sm btn-outline-primary">詳細</a>
+            </li>
+          {% else %}
+            <li class="list-group-item text-muted">該当するイベントはありません</li>
+          {% endfor %}
+        </ul>
+
+        <a href="{{ url_for('events') }}" class="btn btn-primary">開催中のイベント一覧へ</a>
+        <a href="{{ url_for('rewards') }}" class="btn btn-outline-primary ms-2">景品一覧へ</a>
+      </div>
+
+      <div class="mt-4">
+        <h3 class="h6 mb-2">スタンプ履歴（最新20件）</h3>
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="table-responsive">
+              <table class="table table-sm mb-0">
+                <thead>
+                  <tr>
+                    <th style="width: 180px;">日時</th>
+                    <th>内容</th>
+                    <th style="width: 120px;" class="text-end">増減</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for h in histories %}
+                    <tr>
+                      <td>{{ h.created_at|ymd }}</td>
+                      <td>{{ h.reason }}</td>
+                      <td class="text-end">
+                        {% if h.change >= 0 %}
+                          <span class="text-success">+{{ h.change }}</span>
+                        {% else %}
+                          <span class="text-danger">{{ h.change }}</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% else %}
+                    <tr><td colspan="3" class="text-muted">履歴はありません</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}
+
+

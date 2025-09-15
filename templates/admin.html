@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+{% block title %}管理者ページ{% endblock %}
+{% block content %}
+  <h1 class="h4 mb-3">管理者ページ</h1>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>イベント管理</span>
+          <div class="d-flex gap-2">
+            <a class="btn btn-sm btn-primary" href="{{ url_for('admin_event_new') }}">新規イベント作成</a>
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#eventsCollapse" aria-expanded="false">表示/非表示</button>
+          </div>
+        </div>
+        <div id="eventsCollapse" class="collapse">
+          <ul class="list-group list-group-flush">
+            {% for e in events %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="text-truncate" style="max-width:70%">
+                  <a href="{{ url_for('event_detail', event_id=e.id) }}">{{ e.title }}</a>
+                  <div class="small text-muted">{{ e.date or '-' }} / {{ e.location or '-' }} / 定員: {{ e.capacity or '—' }} / ポイント: {{ e.points or 1 }}</div>
+                </div>
+                <form method="post" action="{{ url_for('admin_delete_event', event_id=e.id) }}" class="m-0 p-0" onsubmit="return confirm('イベントを削除します。よろしいですか？');">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">削除</button>
+                </form>
+              </li>
+            {% else %}
+              <li class="list-group-item text-muted">イベントがありません</li>
+            {% endfor %}
+          </ul>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>景品管理</span>
+          <div class="d-flex gap-2">
+            <a class="btn btn-sm btn-primary" href="{{ url_for('admin_reward_new') }}">景品を作成</a>
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#rewardsCollapse" aria-expanded="false">表示/非表示</button>
+          </div>
+        </div>
+        
+        <div id="rewardsCollapse" class="collapse">
+          <ul class="list-group list-group-flush">
+            {% for r in rewards %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ r.name }}（必要: {{ r.required_stamps }}）</span>
+                <form method="post" action="{{ url_for('admin_delete_reward', reward_id=r.id) }}" class="m-0 p-0" onsubmit="return confirm('景品を削除します。よろしいですか？');">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">削除</button>
+                </form>
+              </li>
+            {% else %}
+              <li class="list-group-item text-muted">景品がありません</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mt-3">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">ユーザーのスタンプ数</div>
+        <ul class="list-group list-group-flush">
+          {% for u in users %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>社員コード: {{ u.employee_code }} / role: {{ u.role }}</span>
+              <span class="badge bg-primary">{{ u.stamps }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">景品申請（承認/却下）</div>
+        <ul class="list-group list-group-flush">
+          {% for req in pending_requests %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>社員コード: {{ req.user.employee_code }} / {{ req.reward.name }}</span>
+              <div class="d-flex gap-2">
+                <form method="post" action="{{ url_for('admin_approve_request', request_id=req.id) }}" class="m-0 p-0" onsubmit="return confirm('申請を承認します。よろしいですか？');">
+                  <button class="btn btn-sm btn-success" type="submit">承認</button>
+                </form>
+                <form method="post" action="{{ url_for('admin_reject_request', request_id=req.id) }}" class="m-0 p-0" onsubmit="return confirm('申請を却下します。よろしいですか？');">
+                  <button class="btn btn-sm btn-danger" type="submit">却下</button>
+                </form>
+              </div>
+            </li>
+          {% else %}
+            <li class="list-group-item text-muted">保留中の申請はありません</li>
+          {% endfor %}
+        </ul>
+        <div class="card-footer text-end">
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_stamps') }}">スタンプ承認へ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+

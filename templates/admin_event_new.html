@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% block title %}新規イベント作成{% endblock %}
+{% block content %}
+  <h1 class="h4 mb-3">新規イベント作成</h1>
+  <div class="card">
+    <div class="card-body">
+      <form class="row g-2" method="post" action="{{ url_for('admin_create_event_step1') }}" onsubmit="return confirm('この内容でイベントを登録します。よろしいですか？');">
+        <div class="col-12">
+          <label class="form-label">イベント名</label>
+          <input class="form-control" name="title" placeholder="例: 健康セミナー" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">開催日</label>
+          <input class="form-control" type="date" name="date">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">開始時刻</label>
+          <input class="form-control" type="time" name="start_time">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">終了時刻</label>
+          <input class="form-control" type="time" name="end_time">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">開催場所</label>
+          <input class="form-control" name="location" placeholder="会議室A / オンラインURL">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">定員</label>
+          <input class="form-control" name="capacity" type="number" min="0" placeholder="例: 30">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">ポイント</label>
+          <input class="form-control" name="points" type="number" min="0" value="1">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">担当者</label>
+          <input class="form-control" name="contact_name" placeholder="問い合わせ先">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">種別</label>
+          <select class="form-select" name="event_type">
+            <option value="single">単発</option>
+            <option value="annual">年間</option>
+            <option value="practice">練習</option>
+            <option value="survey">アンケート/応募</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label">説明</label>
+          <textarea class="form-control" name="description" rows="3"></textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label">備考</label>
+          <textarea class="form-control" name="notes" rows="3"></textarea>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit">登録する</button>
+          <a class="btn btn-outline-secondary ms-2" href="{{ url_for('admin') }}">キャンセル</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+
