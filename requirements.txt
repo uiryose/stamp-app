@@ -1,10 +1,4 @@
-fastapi
-uvicorn[standard]
-SQLAlchemy>=2.0
-
-
-
 flask
-sqlalchemy
+gunicorn
+SQLAlchemy>=2.0
 python-dotenv
-uvicorn
